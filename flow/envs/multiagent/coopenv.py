@@ -687,15 +687,15 @@ class CustomTryEnv(MultiEnv):
             # light
             if rl_id in self.mapping_inc.keys():
                 i = int(rl_id.split("center")[ID_IDX])
-                if self.discrete:
-                    action = int(rl_action)
-                else:
-                    # convert values less than 0.0 to zero and above to 1. 0's
-                    # indicate that we should not switch the direction
-                    action = rl_action > 0.0
-
+                # if self.discrete:
+                #     action = int(rl_action)
+                # else:
+                #     # convert values less than 0.0 to zero and above to 1. 0's
+                #     # indicate that we should not switch the direction
+                #     action = rl_action > 0.0
+                action = int(rl_action)
                 if self.current_yellow[i][-1] == 0:  # 是红绿状态
-                    if self.nowsecond[-1] - self.last_change2green[i][-1] <= 5:
+                    if self.nowsecond[-1] - self.last_change2green[i][-1] <= (5/self.sim_step):
                         continue
                     else:
                         if self.lastphase[i][-1] == 0:
@@ -717,7 +717,7 @@ class CustomTryEnv(MultiEnv):
                         self.last_change2yellow[i].append(self.nowsecond[-1])
                         self.current_yellow[i].append(1)
                 else:  # 是红黄状态
-                    if self.nowsecond[-1] - self.last_change2yellow[i][-1] <= 3:
+                    if self.nowsecond[-1] - self.last_change2yellow[i][-1] <= (3/self.sim_step):
                         continue
                     else:
                         if action == 0:
@@ -804,12 +804,12 @@ class CustomTryEnv(MultiEnv):
         self.currently_yellows = [0] * self.num_traffic_lights
         return super().reset()
 
-    def additional_command(self):
-        # specify observed vehicles
-        for veh_id in self.k.vehicle.get_ids():
-            self.k.vehicle.set_color(veh_id=veh_id, color=(255, 255, 255))
-        for veh_id in self.observed_ids:
-            self.k.vehicle.set_color(veh_id=veh_id, color=(255, 0, 0))
+    # def additional_command(self):
+    #     # specify observed vehicles
+    #     for veh_id in self.k.vehicle.get_ids():
+    #         self.k.vehicle.set_color(veh_id=veh_id, color=(255, 255, 255))
+    #     for veh_id in self.observed_ids:
+    #         self.k.vehicle.set_color(veh_id=veh_id, color=(255, 0, 0))
 
     def get_closest_to_intersection_lane(self, edges, num_closest, padding=True):
 
